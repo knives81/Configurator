@@ -251,8 +251,8 @@ public class ConfiguratorController {
         chartItem.setIds(Arrays.asList(testSetNode.getIndex()));
         chartItem.setIsVisible(true);
         chartItem.setTags(testSetNode.getTags());
-        chartItem.setChartType(chartType.value());
-        chartItem.setEntityType(Entity.EntityType.TESTSET.value());
+        chartItem.setChartType(chartType.value().toUpperCase());
+        chartItem.setEntityType(Entity.EntityType.TESTSET.value().toUpperCase());
         chartItem.setConfId(indexForChartItem);
         chartItem.setUsernames(new ArrayList<>());
         return chartItem;
@@ -263,8 +263,8 @@ public class ConfiguratorController {
         chartItem.setIds(Arrays.asList(defectNode.getIndex()));
         chartItem.setIsVisible(true);
         chartItem.setTags(defectNode.getTags());
-        chartItem.setChartType(chartType.value());
-        chartItem.setEntityType(Entity.EntityType.DEFECT.value());
+        chartItem.setChartType(chartType.value().toUpperCase());
+        chartItem.setEntityType(Entity.EntityType.DEFECT.value().toUpperCase());
         chartItem.setConfId(indexForChartItem);
         chartItem.setUsernames(new ArrayList<>());
         return chartItem;
