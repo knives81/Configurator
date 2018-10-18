@@ -33,6 +33,7 @@ public class ConfiguratorApplication implements CommandLineRunner {
         String path = System.getProperty("user.dir") + "\\TemplateConfiguration.xlsx";
         LOG.info("EXECUTING : on "+ path);
         String result = configuratorController.read(path);
+        //String result = configuratorController.readManual(path);
         LOG.info(result);
     }
 }
