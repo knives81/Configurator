@@ -1,6 +1,5 @@
 package com.dashboard.configurator;
 
-import com.dashboard.commondashboard.DefectConfRepository;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,9 @@ import java.io.IOException;
 public class ConfiguratorApplication implements CommandLineRunner {
 
     @Autowired
-    ConfiguratorController configuratorController;
+    ConfiguratorService configuratorService;
+
+
 
     private static Logger LOG = LoggerFactory.getLogger(ConfiguratorApplication.class);
 
@@ -30,9 +31,7 @@ public class ConfiguratorApplication implements CommandLineRunner {
     public void run(String... args) throws IOException, InvalidFormatException {
         LOG.info("EXECUTING : command line runner");
 
-        String path = System.getProperty("user.dir") + "\\TemplateConfiguration.xlsx";
-        LOG.info("EXECUTING : on "+ path);
-        String result = configuratorController.read(path);
+        String result = configuratorService.read();
         //String result = configuratorController.readManual(path);
         LOG.info(result);
     }

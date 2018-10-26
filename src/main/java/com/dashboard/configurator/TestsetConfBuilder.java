@@ -11,38 +11,37 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class TestsetConfBuilder {
+public class TestsetConfBuilder extends ConfBuilderAbstract {
 
-    private List<TestsetNode> buildTestsetNodes(Workbook workbook, HashMap<String, Target> prjToTarget, List<Testset> testsets, List<String> AOs) {
-        Sheet numTestsetSheet = workbook.getSheet("numtestset");
-        HashMap<String, Integer> tagsToConfId = getTagsToConfId(numTestsetSheet);
-        int rowIndexCounter = tagsToConfId.keySet().size();
+    private Workbook workbook;
 
-        Integer indexCounter = 0;
-        if(!tagsToConfId.values().isEmpty()) {
-            indexCounter = Collections.max(tagsToConfId.values())+1;
-        }
+
+    TestsetConfBuilder(WorkbookBuilder workbookBuilder) {
+        workbook = workbookBuilder.getWorkbook();
+        numSheet = workbook.getSheet("numtestset");
+    }
+
+    private List<TestsetNode> buildTestsetNodes(TestsetHelper testsetHelper) {
+        List<String> AOs = testsetHelper.getAOs();
+        HashMap<String,Integer> keyToConfId = getKeyToConfId();
+        Integer rowIndexCounter = getRowIndexCounter();
+        Integer confIdCounter = getConfIdCounter();
 
         List<TestsetNode> testsetNodes = new ArrayList<>();
         for(String AO : AOs) {
-            Target target = getTargetPerAOFromTestset(prjToTarget, testsets, AO);
+            Target target = testsetHelper.getTargetPerAOFromTestset(AO);
             for(String cycle : cycles) {
                 String key = AO+":"+cycle;
 
-                List<Integer> ids = testsets.stream()
-                        .filter(t -> t.getTag1().equals(AO))
-                        .filter(t -> t.getTag2().equals(cycle))
-                        .map(Testset::getId)
-                        .collect(Collectors.toList());
+                List<Integer> ids = testsetHelper.getIds(AO,cycle);
                 if(!ids.isEmpty()) {
                     int indexTestNode;
-
-                    if(tagsToConfId.get(key)!=null) {
-                        indexTestNode = tagsToConfId.get(key);
-
+                    if(keyToConfId.keySet().contains(key)) {
+                        indexTestNode = keyToConfId.get(key);
                     } else {
-                        indexTestNode = modifyRow(numTestsetSheet, rowIndexCounter, indexCounter, key);
-                        indexCounter++;
+                        modifyRow(rowIndexCounter, confIdCounter, key);
+                        indexTestNode = confIdCounter;
+                        confIdCounter++;
                         rowIndexCounter++;
                     }
                     testsetNodes.add(new TestsetNode(indexTestNode,ids,Arrays.asList(AO,cycle),target));
@@ -57,5 +56,10 @@ public class TestsetConfBuilder {
         testsetConf.setTagNames(Arrays.asList("AO","Cycle"));
         testsetConf.setNodes(testsetNodes);
         return testsetConf;
+    }
+
+    protected TestsetConf build(TestsetHelper testsetHelper) {
+        List<TestsetNode> testsetNodes = buildTestsetNodes(testsetHelper);
+        return buildeTestsetConf(testsetNodes);
     }
 }

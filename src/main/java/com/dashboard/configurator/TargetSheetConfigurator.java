@@ -9,11 +9,14 @@ import java.util.HashMap;
 @Component
 public class TargetSheetConfigurator {
 
-
+    private Workbook workbook;
+    TargetSheetConfigurator(WorkbookBuilder workbookBuilder) {
+        workbook = workbookBuilder.getWorkbook();
+    }
 
     private static DataFormatter dataFormatter = new DataFormatter();
 
-    HashMap<String, Target> getTargets(Workbook workbook) {
+    HashMap<String, Target> getTargets() {
         HashMap<String, Target> prjToTarget = new HashMap<>();
 
         Sheet targetSheet = workbook.getSheet("target");

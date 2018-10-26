@@ -14,9 +14,12 @@ public class TestSetSheetConfigurator {
     private static List<String> cycles = Arrays.asList("CA","CFI","CFI2");
 
     private static DataFormatter dataFormatter = new DataFormatter();
+    private Workbook workbook;
+    TestSetSheetConfigurator(WorkbookBuilder workbookBuilder) {
+        workbook = workbookBuilder.getWorkbook();
+    }
 
-
-    List<Testset> getTestsets(Workbook workbook) {
+    List<Testset> getTestsets() {
         Sheet testsetSheet = workbook.getSheet("testset");
 
 

@@ -4,37 +4,42 @@ import com.dashboard.commondashboard.DefectConf;
 import com.dashboard.commondashboard.DefectNode;
 import com.dashboard.commondashboard.Filter;
 import com.dashboard.commondashboard.Target;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Component
-public class DefectConfBuilder {
+public class DefectConfBuilder extends ConfBuilderAbstract{
 
-    private List<DefectNode> buildDefectNodes(Workbook workbook, HashMap<String, Target> prjToTarget, List<Testset> testsets, List<String> AOs) {
-        Sheet numDefectSheet = workbook.getSheet("numdefect");
-        HashMap<String, Integer> tagsToConfId = getTagsToConfId(numDefectSheet);
-        int rowIndexCounter = tagsToConfId.keySet().size();
+    private Workbook workbook;
+    DefectConfBuilder(WorkbookBuilder workbookBuilder) {
+        workbook = workbookBuilder.getWorkbook();
+        numSheet = workbook.getSheet("numdefect");
+    }
 
-        Integer indexCounter = 0;
-        if(!tagsToConfId.values().isEmpty()) {
-            indexCounter = Collections.max(tagsToConfId.values())+1;
-        }
+    private List<DefectNode> buildDefectNodes(TestsetHelper testsetHelper) {
+
+        List<String> AOs = testsetHelper.getAOs();
+        HashMap<String,Integer> keyToConfId = getKeyToConfId();
+        Integer rowIndexCounter = getRowIndexCounter();
+        Integer confIdCounter = getConfIdCounter();
 
         List<DefectNode> defectNodes = new ArrayList<>();
         for(String AO : AOs) {
-            Target target = getTargetPerAOFromTestset(prjToTarget, testsets, AO);
+            Target target = testsetHelper.getTargetPerAOFromTestset(AO);
             String key = AO;
             int indexDefectNode;
-            if(tagsToConfId.get(key)!=null) {
-                indexDefectNode = tagsToConfId.get(key);
+
+            if(keyToConfId.keySet().contains(key)) {
+                indexDefectNode = keyToConfId.get(key);
             } else {
-                indexDefectNode = modifyRow(numDefectSheet, rowIndexCounter, indexCounter, key);
-                indexCounter++;
+                modifyRow(rowIndexCounter, confIdCounter, key);
+                indexDefectNode = confIdCounter;
+                confIdCounter++;
                 rowIndexCounter++;
             }
+
             defectNodes.add(new DefectNode(indexDefectNode,"\\\"user-template-02='"+AO+"'\\\"",Arrays.asList(AO),target));
         }
         return defectNodes;
@@ -51,6 +56,11 @@ public class DefectConfBuilder {
         defectConf.setFilters(Arrays.asList(filter));
         defectConf.setNodes(defectNodes);
         return defectConf;
+    }
+
+    public DefectConf build(TestsetHelper testsetHelper){
+        List<DefectNode> defectNodes = buildDefectNodes(testsetHelper);
+        return buildDefectConf(defectNodes);
     }
 
 

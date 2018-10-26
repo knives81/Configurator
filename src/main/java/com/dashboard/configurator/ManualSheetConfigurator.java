@@ -18,7 +18,12 @@ public class ManualSheetConfigurator {
 
     private static DataFormatter dataFormatter = new DataFormatter();
 
-    List<ChartItem> getChartItems(Workbook workbook) {
+    private Workbook workbook;
+    ManualSheetConfigurator(WorkbookBuilder workbookBuilder) {
+        workbook = workbookBuilder.getWorkbook();
+    }
+
+    List<ChartItem> getChartItems() {
         List<ChartItem> chartItems = new ArrayList<>();
         Sheet manualSheet = workbook.getSheet("manual");
         for (Row row : manualSheet) {

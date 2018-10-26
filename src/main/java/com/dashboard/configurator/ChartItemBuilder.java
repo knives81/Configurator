@@ -14,7 +14,12 @@ public class ChartItemBuilder {
 
     private static DataFormatter dataFormatter = new DataFormatter();
 
-    List<ChartItem> buildChartItem(Workbook workbook, TestsetConf testsetConf, DefectConf defectConf) {
+    private Workbook workbook;
+    ChartItemBuilder(WorkbookBuilder workbookBuilder) {
+        workbook = workbookBuilder.getWorkbook();
+    }
+
+    public List<ChartItem> build(TestsetConf testsetConf, DefectConf defectConf) {
         Sheet chartItemSheet = workbook.getSheet("chartitem");
         int indexForChartItem = 20;
         List<ChartItem> chartItems = new ArrayList<>();
